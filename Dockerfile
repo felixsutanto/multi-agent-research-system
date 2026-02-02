@@ -1,29 +1,23 @@
-# Multi-Agent Research System
+# Lightweight setup for HF Spaces
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Minimal system deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN pip install uv
-
-# Copy project files
-COPY pyproject.toml .
+# Copy only what's needed
+COPY requirements.txt .
+COPY app.py .
 COPY src/ ./src/
 COPY config/ ./config/
-COPY app.py .
 
-# Install dependencies
-RUN uv sync --no-dev
+# Install with pip (faster than uv on HF)
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port 7860 (Hugging Face Spaces requirement)
 EXPOSE 7860
 
-# Run the Gradio app
-CMD ["uv", "run", "python", "app.py"]
+# Use python directly
+CMD ["python", "app.py"]
