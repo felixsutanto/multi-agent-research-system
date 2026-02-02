@@ -3,13 +3,14 @@ title: Multi-Agent Research System
 emoji: 🔬
 colorFrom: blue
 colorTo: purple
-sdk: docker
-app_port: 7860
+sdk: gradio
+sdk_version: 5.14.0
+app_file: app.py
 pinned: false
 license: mit
 ---
 
-# Multi-Agent Research System
+# 🔬 Multi-Agent Research System
 
 > An AI-powered multi-agent system where specialized agents collaborate to conduct comprehensive research, synthesize findings, and produce high-quality reports with citations.
 
@@ -19,25 +20,14 @@ license: mit
 - **Free LLM**: Uses Groq's Llama 3.3 70B (free tier)
 - **Web Search**: Tavily API (1000 free searches/month)
 - **Quality Control**: Automatic revision loop with RAG Triad evaluation
-- **API Ready**: FastAPI with REST and WebSocket endpoints
+- **Web Interface**: Easy-to-use Gradio UI
 
-## 🚀 Quick Start
+## 🚀 How to Use
 
-### API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/research` | POST | Conduct research |
-| `/ws/research` | WebSocket | Streaming updates |
-
-### Example Request
-
-```bash
-curl -X POST "https://YOUR-SPACE.hf.space/research" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What are the benefits of renewable energy?"}'
-```
+1. Enter your research question in the text box
+2. Click "🚀 Start Research"
+3. Wait 2-3 minutes while agents work together
+4. Get a comprehensive report with citations!
 
 ## 🏗️ Architecture
 
@@ -57,12 +47,14 @@ User Query → Planner → Researcher → Analyst → Synthesizer → Critic →
 
 ## 🔧 Configuration
 
-Set these secrets in your Hugging Face Space settings:
+This Space uses the following free APIs:
 
-| Secret | Description |
-|--------|-------------|
-| `GROQ_API_KEY` | Get free at [console.groq.com](https://console.groq.com) |
-| `TAVILY_API_KEY` | Get free at [tavily.com](https://tavily.com) |
+| API | Purpose | Get Key |
+|-----|---------|---------|
+| Groq | LLM (Llama 3.3 70B) | [console.groq.com](https://console.groq.com) |
+| Tavily | Web Search | [tavily.com](https://tavily.com) |
+
+Secrets are configured in Space Settings → Repository secrets.
 
 ## 📊 Evaluation Metrics
 
@@ -72,6 +64,28 @@ Set these secrets in your Hugging Face Space settings:
 | Groundedness | >0.90 | Claims supported by sources |
 | Answer Relevance | >0.85 | Answer addresses question |
 
+## 🛠️ Local Development
+
+```bash
+# Clone repo
+git clone https://github.com/felixsutanto/multi-agent-research-system
+cd multi-agent-research-system
+
+# Install dependencies
+python -m uv sync
+
+# Add .env with API keys
+echo "GROQ_API_KEY=your_key" > .env
+echo "TAVILY_API_KEY=your_key" >> .env
+
+# Run Gradio app
+python -m uv run python app.py
+```
+
 ## 📝 License
 
 MIT
+
+---
+
+**GitHub**: [felixsutanto/multi-agent-research-system](https://github.com/felixsutanto/multi-agent-research-system)
