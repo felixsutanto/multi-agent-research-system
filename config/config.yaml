@@ -1,0 +1,43 @@
+# Multi-Agent Research System Configuration
+
+# LLM Settings
+llm:
+  model: "gpt-4o"
+  temperature: 0.0
+  max_tokens: 4096
+  timeout: 60
+
+# Agent Settings
+agents:
+  max_iterations: 3
+  max_research_tasks: 5
+  max_analysis_tasks: 3
+
+# Tool Settings
+tools:
+  web_search:
+    max_results: 5
+    include_raw_content: true
+  vector_search:
+    top_k: 5
+    min_score: 0.7
+  python_repl:
+    timeout: 30
+    max_output_length: 5000
+
+# Evaluation Settings
+evaluation:
+  context_relevance_threshold: 0.80
+  groundedness_threshold: 0.90
+  answer_relevance_threshold: 0.85
+
+# API Settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
