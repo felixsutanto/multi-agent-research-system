@@ -1,21 +1,45 @@
-# Vercelignore - files to exclude from deployment
+# Vercelignore - Exclude backend and unnecessary files from Vercel deployment
 
-# dependencies
-/node_modules
+# Python backend
+src/api/
+src/graph/
+src/evaluation/
+src/utils/
+tests/
+*.py
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.python-version
+requirements.txt
+pyproject.toml
+uv.lock
+Dockerfile
+docker-compose.yml
+render.yaml
 
-# testing
+# Frontend local development folder (duplicate)
+frontend/
+
+# Dependencies
+node_modules/
+
+# Testing
 /coverage
 
-# misc
+# Misc
 .DS_Store
 *.pem
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# Local env files
+.env
 .env*.local
 
 # IDE
@@ -24,6 +48,14 @@ yarn-error.log*
 *.swp
 *.swo
 
-# git
+# Git
 .git
 .gitignore
+
+# Data and config
+data/
+config/
+
+# Documentation (optional - include if you want docs deployed)
+# README.md
+# DEPLOYMENT.md
