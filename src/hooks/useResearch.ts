@@ -140,8 +140,7 @@ export function useResearch(sessionId?: string) {
         queryKey: ['research', currentSessionId],
         queryFn: async () => {
             if (!currentSessionId) return null
-            const response = await researchApi.getSession(currentSessionId)
-            return response.data
+            return await researchApi.getSession(currentSessionId)
         },
         enabled: !!currentSessionId,
         refetchInterval: isStreaming ? 5000 : false, // Poll every 5s while streaming
@@ -151,8 +150,7 @@ export function useResearch(sessionId?: string) {
     const { data: sessions, isLoading: isLoadingSessions } = useQuery({
         queryKey: ['research-sessions'],
         queryFn: async () => {
-            const response = await researchApi.getSessions()
-            return response.data || []
+            return await researchApi.getSessions()
         },
     })
 
