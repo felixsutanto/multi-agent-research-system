@@ -22,16 +22,19 @@ export function useWebSocket(sessionId: string, options: UseWebSocketOptions = {
     const wsRef = useRef<WebSocket | null>(null)
     const reconnectCountRef = useRef(0)
     const listenersRef = useRef<Map<string, Set<(data: any) => void>>>(new Map())
+    const isConnectedRef = useRef(false) // Added for checking connection status in connect
 
     const [isConnected, setIsConnected] = useState(false)
     const [connectionError, setConnectionError] = useState<string | null>(null)
 
     // Connect to WebSocket
     const connect = useCallback(() => {
-        if (!sessionId) return
+        if (!sessionId || isConnectedRef.current) {
+            return
+        }
 
         try {
-            const wsUrl = getWebSocketUrl(sessionId)
+            const wsUrl = getWebSocketUrl()
             console.log('Connecting to WebSocket:', wsUrl)
 
             const ws = new WebSocket(wsUrl)
