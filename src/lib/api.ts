@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ApiResponse, ResearchFormData, ResearchResult, ResearchSession } from './types'
+import type { ResearchFormData, ResearchResult, ResearchSession } from './types'
 
 // Get API URL from environment variable
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -53,45 +53,61 @@ apiClient.interceptors.response.use(
 export const researchApi = {
     /**
      * Start a new research session
+     * Backend returns ResearchResponse directly (not wrapped)
      */
-    startResearch: async (data: ResearchFormData): Promise<ApiResponse<ResearchSession>> => {
-        const response = await apiClient.post<ApiResponse<ResearchSession>>('/research', {
+    startResearch: async (data: ResearchFormData): Promise<ResearchResult> => {
+        const response = await apiClient.post<ResearchResult>('/research', {
             query: data.query,
             max_iterations: data.maxIterations,
-            include_analysis: data.includeAnalysis,
+            include_evaluation: data.includeAnalysis,
         })
-        return response.data
+        // Backend returns the result directly, create a session-like object
+        return {
+            sessionId: `session-${Date.now()}`, // Generate temp ID since backend doesn't return one
+            query: response.data.query,
+            finalReport: response.data.report,
+            citations: response.data.citations,
+            metrics: response.data.metrics,
+            agentActivities: response.data.agent_log?.map(log => ({
+                agent: log.agent as any,
+                action: log.action,
+                status: 'success' as any,
+                timestamp: log.timestamp,
+                output: log.output ? JSON.stringify(log.output) : undefined,
+            })) || [],
+            createdAt: new Date().toISOString(),
+            completedAt: new Date().toISOString(),
+        }
     },
 
     /**
-     * Get research session by ID
+     * Get research session by ID (not implemented in backend yet)
      */
-    getSession: async (sessionId: string): Promise<ApiResponse<ResearchSession>> => {
-        const response = await apiClient.get<ApiResponse<ResearchSession>>(`/research/${sessionId}`)
-        return response.data
+    getSession: async (sessionId: string): Promise<ResearchSession | null> => {
+        // Backend doesn't support this yet, return null
+        return null
     },
 
     /**
-     * Get all research sessions (for history)
+     * Get all research sessions (not implemented in backend yet)
      */
-    getSessions: async (): Promise<ApiResponse<ResearchSession[]>> => {
-        const response = await apiClient.get<ApiResponse<ResearchSession[]>>('/research')
-        return response.data
+    getSessions: async (): Promise<ResearchSession[]> => {
+        // Backend doesn't support this yet, return empty array
+        return []
     },
 
     /**
-     * Delete a research session
+     * Delete a research session (not implemented in backend yet)
      */
-    deleteSession: async (sessionId: string): Promise<ApiResponse<void>> => {
-        const response = await apiClient.delete<ApiResponse<void>>(`/research/${sessionId}`)
-        return response.data
+    deleteSession: async (sessionId: string): Promise<void> => {
+        // Backend doesn't support this yet, do nothing
     },
 
     /**
      * Get health status of the API
      */
-    health: async (): Promise<ApiResponse<{ status: string; version: string }>> => {
-        const response = await apiClient.get<ApiResponse<{ status: string; version: string }>>('/health')
+    health: async (): Promise<{ status: string; version: string }> => {
+        const response = await apiClient.get<{ status: string; version: string }>('/health')
         return response.data
     },
 }
@@ -99,10 +115,10 @@ export const researchApi = {
 /**
  * Get WebSocket URL for real-time updates
  */
-export function getWebSocketUrl(sessionId: string): string {
+export function getWebSocketUrl(): string {
     const wsProtocol = API_URL.startsWith('https') ? 'wss' : 'ws'
     const baseUrl = API_URL.replace(/^https?:\/\//, '')
-    return `${wsProtocol}://${baseUrl}/ws/research/${sessionId}`
+    return `${wsProtocol}://${baseUrl}/ws/research`
 }
 
 /**

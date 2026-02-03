@@ -116,16 +116,17 @@ export function useResearch(sessionId?: string) {
             setIsStreaming(true)
 
             // Call API to start research
-            const response = await researchApi.startResearch(data)
+            const result = await researchApi.startResearch(data)
 
-            if (!response.success || !response.data) {
-                throw new Error(response.error?.message || 'Failed to start research')
-            }
-
-            return response.data
+            return result
         },
-        onSuccess: (session) => {
-            setCurrentSessionId(session.sessionId)
+        onSuccess: (result) => {
+            setCurrentSessionId(result.sessionId)
+            setReportContent(result.finalReport)
+            setCitations(result.citations)
+            setMetrics(result.metrics)
+            setAgentActivities(result.agentActivities || [])
+            setIsStreaming(false)
             queryClient.invalidateQueries({ queryKey: ['research-sessions'] })
         },
         onError: (err: Error) => {
