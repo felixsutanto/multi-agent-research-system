@@ -50,25 +50,47 @@ apiClient.interceptors.response.use(
 // API Endpoints
 // ========================================
 
+// Backend response type (matches what the API actually returns)
+interface BackendResearchResponse {
+    query: string
+    report: string  // Backend uses 'report', not 'finalReport'
+    citations: any[]
+    metrics: any
+    agent_log?: any[]
+    iterations: number
+    approved: boolean
+    errors: string[]
+}
+
 export const researchApi = {
     /**
      * Start a new research session
      * Backend returns ResearchResponse directly (not wrapped)
      */
     startResearch: async (data: ResearchFormData): Promise<ResearchResult> => {
-        const response = await apiClient.post<ResearchResult>('/research', {
+        const response = await apiClient.post<BackendResearchResponse>('/research', {
             query: data.query,
             max_iterations: data.maxIterations,
             include_evaluation: data.includeAnalysis,
         })
-        // Backend returns the result directly, create a session-like object
+        // Map backend response to frontend type
         return {
             sessionId: `session-${Date.now()}`, // Generate temp ID since backend doesn't return one
             query: response.data.query,
-            finalReport: response.data.report,
-            citations: response.data.citations,
-            metrics: response.data.metrics,
-            agentActivities: response.data.agent_log?.map(log => ({
+            finalReport: response.data.report,  // Map 'report' to 'finalReport'
+            citations: response.data.citations.map((c: any, i: number) => ({
+                id: c.id || `cite-${i}`,
+                url: c.url || '',
+                title: c.title || '',
+                snippet: c.snippet || '',
+            })),
+            metrics: {
+                contextRelevance: response.data.metrics?.context_relevance || 0,
+                groundedness: response.data.metrics?.groundedness || 0,
+                answerRelevance: response.data.metrics?.answer_relevance || 0,
+                overallScore: response.data.metrics?.overall_score || 0,
+            },
+            agentActivities: response.data.agent_log?.map((log: any) => ({
                 agent: log.agent as any,
                 action: log.action,
                 status: 'success' as any,
