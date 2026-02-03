@@ -55,7 +55,7 @@ export const researchApi = {
      * Start a new research session
      */
     startResearch: async (data: ResearchFormData): Promise<ApiResponse<ResearchSession>> => {
-        const response = await apiClient.post<ApiResponse<ResearchSession>>('/api/research', {
+        const response = await apiClient.post<ApiResponse<ResearchSession>>('/research', {
             query: data.query,
             max_iterations: data.maxIterations,
             include_analysis: data.includeAnalysis,
@@ -67,7 +67,7 @@ export const researchApi = {
      * Get research session by ID
      */
     getSession: async (sessionId: string): Promise<ApiResponse<ResearchSession>> => {
-        const response = await apiClient.get<ApiResponse<ResearchSession>>(`/api/research/${sessionId}`)
+        const response = await apiClient.get<ApiResponse<ResearchSession>>(`/research/${sessionId}`)
         return response.data
     },
 
@@ -75,7 +75,7 @@ export const researchApi = {
      * Get all research sessions (for history)
      */
     getSessions: async (): Promise<ApiResponse<ResearchSession[]>> => {
-        const response = await apiClient.get<ApiResponse<ResearchSession[]>>('/api/research')
+        const response = await apiClient.get<ApiResponse<ResearchSession[]>>('/research')
         return response.data
     },
 
@@ -83,7 +83,7 @@ export const researchApi = {
      * Delete a research session
      */
     deleteSession: async (sessionId: string): Promise<ApiResponse<void>> => {
-        const response = await apiClient.delete<ApiResponse<void>>(`/api/research/${sessionId}`)
+        const response = await apiClient.delete<ApiResponse<void>>(`/research/${sessionId}`)
         return response.data
     },
 
@@ -109,5 +109,5 @@ export function getWebSocketUrl(sessionId: string): string {
  * Get Server-Sent Events URL as fallback
  */
 export function getSSEUrl(sessionId: string): string {
-    return `${API_URL}/api/research/${sessionId}/stream`
+    return `${API_URL}/research/${sessionId}/stream`
 }
