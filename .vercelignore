@@ -5,6 +5,7 @@ src/api/
 src/graph/
 src/evaluation/
 src/utils/
+src/agents/
 tests/
 *.py
 __pycache__/
@@ -52,9 +53,9 @@ yarn-error.log*
 .git
 .gitignore
 
-# Data and config
-data/
-config/
+# Backend data and config (don't exclude src/data - needed for frontend presets!)
+/data/
+/config/
 
 # Documentation (optional - include if you want docs deployed)
 # README.md
