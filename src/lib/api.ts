@@ -7,11 +7,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 // Create axios instance with default config
 export const apiClient = axios.create({
     baseURL: API_URL,
-    timeout: 300000, // 5 minutes for long-running research
+    timeout: 600000, // 10 minutes for long-running research on HF free tier
     headers: {
         'Content-Type': 'application/json',
     },
 })
+
 
 // Request interceptor to add auth tokens if needed in the future
 apiClient.interceptors.request.use(

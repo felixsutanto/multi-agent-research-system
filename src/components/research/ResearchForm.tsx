@@ -33,11 +33,12 @@ export function ResearchForm({ onSubmit, isLoading = false }: ResearchFormProps)
         resolver: zodResolver(ResearchFormSchema),
         defaultValues: {
             query: "",
-            maxIterations: 3,
+            maxIterations: 1, // Reduced from 3 for faster results on HF free tier
             includeAnalysis: true,
         },
         mode: "onChange",
     })
+
 
     const handleSubmit = async (data: ResearchFormData) => {
         try {
