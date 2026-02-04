@@ -254,8 +254,9 @@ export function StreamingReport({ report, citations = [], isStreaming }: Streami
                                   prose-strong:text-foreground
                                   prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
                                   prose-pre:bg-muted prose-pre:border prose-pre:border-border">
-                                            <ReactMarkdown content={section.content} />
+                                            <ReactMarkdown content={section.content} citations={citations} />
                                         </div>
+
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -323,18 +324,42 @@ export function StreamingReport({ report, citations = [], isStreaming }: Streami
     )
 }
 
-// Simple markdown renderer component
-function ReactMarkdown({ content }: { content: string }) {
-    // Very basic markdown parsing - in production, use a library like react-markdown
-    const html = content
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-        .replace(/`(.*?)`/gim, '<code>$1</code>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br />')
+// Markdown renderer with IEEE citation support
+function ReactMarkdown({ content, citations = [] }: { content: string; citations?: Citation[] }) {
+    // Convert [N] citations to clickable links
+    const processContent = (text: string): string => {
+        let processed = text
+
+        // Convert IEEE citations [1], [2], etc. to clickable links
+        processed = processed.replace(
+            /\[(\d+)\]/g,
+            (match, num) => {
+                const citationNum = parseInt(num)
+                if (citationNum > 0 && citationNum <= citations.length) {
+                    const citation = citations[citationNum - 1]
+                    if (citation?.url) {
+                        return `<a href="${citation.url}" target="_blank" rel="noopener noreferrer" class="citation-link text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 font-medium hover:underline" title="${citation.title || 'View source'}">[${num}]</a>`
+                    }
+                }
+                return match
+            }
+        )
+
+        // Standard markdown processing
+        processed = processed
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+            .replace(/`(.*?)`/gim, '<code>$1</code>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br />')
+
+        return processed
+    }
+
+    const html = processContent(content)
 
     return <div dangerouslySetInnerHTML={{ __html: `<p>${html}</p>` }} />
 }
