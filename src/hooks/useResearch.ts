@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useWebSocket } from '@/lib/websocket'
 import { researchApi } from '@/lib/api'
 import type {
     ResearchFormData,
@@ -10,11 +9,48 @@ import type {
     ResearchMetrics,
     Citation,
     ResearchResult,
-    AgentUpdateEvent,
-    ReportChunkEvent,
-    MetricsUpdateEvent,
-    CompleteEvent,
 } from '@/lib/types'
+
+// LocalStorage key for session history
+const SESSIONS_STORAGE_KEY = 'research-sessions'
+
+// Helper to get sessions from localStorage
+function getStoredSessions(): ResearchResult[] {
+    if (typeof window === 'undefined') return []
+    try {
+        const stored = localStorage.getItem(SESSIONS_STORAGE_KEY)
+        return stored ? JSON.parse(stored) : []
+    } catch {
+        return []
+    }
+}
+
+// Helper to save session to localStorage
+function saveSession(session: ResearchResult): void {
+    if (typeof window === 'undefined') return
+    try {
+        const sessions = getStoredSessions()
+        // Add new session at the beginning
+        sessions.unshift(session)
+        // Keep only last 10 sessions
+        const trimmed = sessions.slice(0, 10)
+        localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(trimmed))
+    } catch (e) {
+        console.error('Failed to save session:', e)
+    }
+}
+
+// Helper to delete session from localStorage
+function deleteStoredSession(sessionId: string): void {
+    if (typeof window === 'undefined') return
+    try {
+        const sessions = getStoredSessions()
+        const filtered = sessions.filter((s: ResearchResult) => s.sessionId !== sessionId)
+        localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(filtered))
+    } catch (e) {
+        console.error('Failed to delete session:', e)
+    }
+}
 
 export function useResearch(sessionId?: string) {
     const queryClient = useQueryClient()
@@ -27,82 +63,6 @@ export function useResearch(sessionId?: string) {
     const [metrics, setMetrics] = useState<Partial<ResearchMetrics>>({})
     const [isStreaming, setIsStreaming] = useState(false)
     const [error, setError] = useState<string | null>(null)
-
-    // WebSocket connection
-    const {
-        isConnected,
-        connectionError,
-        on,
-        disconnect,
-    } = useWebSocket(currentSessionId || '', {
-        onOpen: () => {
-            console.log('Research WebSocket connected')
-            setError(null)
-        },
-        onError: (err) => {
-            console.error('Research WebSocket error:', err)
-            setError('Connection error occurred')
-        },
-        onClose: () => {
-            console.log('Research WebSocket closed')
-            setIsStreaming(false)
-        },
-    })
-
-    // Listen to WebSocket events
-    useEffect(() => {
-        if (!currentSessionId) return
-
-        // Agent updates
-        const unsubscribeAgent = on('agent_update', (data: AgentUpdateEvent) => {
-            const activity: AgentActivity = {
-                agent: data.agent,
-                action: data.action,
-                status: data.status,
-                timestamp: new Date().toISOString(),
-                output: data.output,
-                metrics: data.metrics,
-            }
-
-            setAgentActivities(prev => [...prev, activity])
-        })
-
-        // Report chunks (streaming)
-        const unsubscribeReport = on('report_chunk', (data: ReportChunkEvent) => {
-            setReportContent(prev => prev + data.content)
-            setIsStreaming(!data.isComplete)
-        })
-
-        // Metrics updates
-        const unsubscribeMetrics = on('metrics_update', (data: MetricsUpdateEvent) => {
-            setMetrics(prev => ({ ...prev, ...data.metrics }))
-        })
-
-        // Research complete
-        const unsubscribeComplete = on('complete', (data: CompleteEvent) => {
-            setReportContent(data.result.finalReport)
-            setCitations(data.result.citations)
-            setMetrics(data.result.metrics)
-            setIsStreaming(false)
-
-            // Update query cache
-            queryClient.setQueryData(['research', currentSessionId], data.result)
-        })
-
-        // Error handling
-        const unsubscribeError = on('error', (data: { message: string }) => {
-            setError(data.message)
-            setIsStreaming(false)
-        })
-
-        return () => {
-            unsubscribeAgent()
-            unsubscribeReport()
-            unsubscribeMetrics()
-            unsubscribeComplete()
-            unsubscribeError()
-        }
-    }, [currentSessionId, on, queryClient])
 
     // Start new research session
     const startResearch = useMutation({
@@ -127,6 +87,12 @@ export function useResearch(sessionId?: string) {
             setMetrics(result.metrics)
             setAgentActivities(result.agentActivities || [])
             setIsStreaming(false)
+            setError(null) // Clear any WebSocket errors since research succeeded
+
+            // Save to localStorage for history
+            saveSession(result)
+
+            // Invalidate to refresh history
             queryClient.invalidateQueries({ queryKey: ['research-sessions'] })
         },
         onError: (err: Error) => {
@@ -135,29 +101,30 @@ export function useResearch(sessionId?: string) {
         },
     })
 
-    // Get research session details
+    // Get research session details (from localStorage)
     const { data: sessionData, isLoading: isLoadingSession } = useQuery({
         queryKey: ['research', currentSessionId],
         queryFn: async () => {
             if (!currentSessionId) return null
-            return await researchApi.getSession(currentSessionId)
+            // Try to find in localStorage
+            const sessions = getStoredSessions()
+            return sessions.find((s: ResearchResult) => s.sessionId === currentSessionId) || null
         },
         enabled: !!currentSessionId,
-        refetchInterval: isStreaming ? 5000 : false, // Poll every 5s while streaming
     })
 
-    // Get all research sessions (for history)
+    // Get all research sessions (from localStorage)
     const { data: sessions, isLoading: isLoadingSessions } = useQuery({
         queryKey: ['research-sessions'],
         queryFn: async () => {
-            return await researchApi.getSessions()
+            return getStoredSessions()
         },
     })
 
     // Delete a session
     const deleteSession = useMutation({
         mutationFn: async (sessionId: string) => {
-            await researchApi.deleteSession(sessionId)
+            deleteStoredSession(sessionId)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['research-sessions'] })
@@ -173,8 +140,7 @@ export function useResearch(sessionId?: string) {
         setMetrics({})
         setError(null)
         setIsStreaming(false)
-        disconnect()
-    }, [disconnect])
+    }, [])
 
     // Rerun a previous research
     const rerunResearch = useCallback(async (query: string, maxIterations = 3, includeAnalysis = true) => {
@@ -199,8 +165,8 @@ export function useResearch(sessionId?: string) {
 
         // State
         isStreaming,
-        isConnected,
-        error: error || connectionError,
+        isConnected: false, // WebSocket not used since HF doesn't support it
+        error, // Only show actual API errors, not WebSocket connection errors
         isLoadingSession,
         isLoadingSessions,
         isStarting: startResearch.isPending,
