@@ -76,7 +76,7 @@ export default function HistoryPage() {
                                                 <CardTitle className="text-xl">
                                                     {truncate(session.query, 100)}
                                                 </CardTitle>
-                                                <StatusBadge status={session.status} />
+                                                <StatusBadge status="completed" />
                                             </div>
                                             <CardDescription className="flex items-center gap-4 text-sm">
                                                 <span className="flex items-center gap-1">
