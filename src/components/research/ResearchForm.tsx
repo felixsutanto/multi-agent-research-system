@@ -3,7 +3,11 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowRight, Sparkles, Loader2 } from "lucide-react"
+import {
+    ArrowRight, Sparkles, Loader2,
+    Car, Brain, Leaf, Landmark, Atom, HeartPulse, Shield, Shirt,
+    type LucideIcon
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -19,6 +23,17 @@ import { Badge } from "@/components/ui/badge"
 import { ResearchFormSchema, type ResearchFormData } from "@/lib/types"
 import { RESEARCH_PRESETS } from "@/data/presets"
 import { toast } from "sonner"
+
+// Icon mapping for preset icons
+const iconMap: Record<string, LucideIcon> = {
+    Car, Brain, Leaf, Landmark, Atom, HeartPulse, Shield, Shirt,
+}
+
+function PresetIcon({ name }: { name: string }) {
+    const IconComponent = iconMap[name]
+    if (!IconComponent) return <span className="text-2xl">{name}</span>
+    return <IconComponent className="h-7 w-7 text-purple-500" />
+}
 
 interface ResearchFormProps {
     onSubmit: (data: ResearchFormData) => Promise<void>
@@ -156,7 +171,9 @@ Example: Analyze Indonesia's 2026 EV policy impact on automotive industry"
                              hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 
                              transition-all text-left group"
                                     >
-                                        <div className="text-3xl">{preset.icon}</div>
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                                            <PresetIcon name={preset.icon} />
+                                        </div>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <h4 className="font-semibold text-sm group-hover:text-purple-600 dark:group-hover:text-purple-400">
