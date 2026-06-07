@@ -3,9 +3,7 @@ title: Multi-Agent Research System
 emoji: 🔬
 colorFrom: blue
 colorTo: purple
-sdk: gradio
-sdk_version: 5.14.0
-app_file: app.py
+sdk: docker
 pinned: false
 license: mit
 ---
