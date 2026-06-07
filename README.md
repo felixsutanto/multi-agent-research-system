@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: Multi-Agent Research System
 emoji: 🔬
@@ -13,295 +12,144 @@ license: mit
 
 # 🔬 Multi-Agent Research System
 
-> An AI-powered multi-agent system where specialized agents collaborate to conduct comprehensive research, synthesize findings, and produce high-quality reports with citations.
+An AI-powered multi-agent research system designed to conduct comprehensive, high-quality, autonomous research. The system features a robust **Python (FastAPI) Backend** orchestrating multiple specialized agents and a modern, responsive **Next.js 15 Frontend** with real-time WebSocket streaming, interactive timelines, and detailed quality dashboards.
 
-## ✨ Features
+> [!NOTE]
+> This project is designed as a production-grade demonstration for the AI Engineering track, showcasing multi-agent collaboration, WebSocket streaming, RAG evaluation, Docker containerization, CI/CD, and serverless hosting.
 
-- **5 Specialized Agents**: Planner, Researcher, Analyst, Synthesizer, Critic
-- **Free LLM**: Uses Groq's Llama 3.3 70B (free tier)
-- **Web Search**: Tavily API (1000 free searches/month)
-- **Quality Control**: Automatic revision loop with RAG Triad evaluation
-- **Web Interface**: Easy-to-use Gradio UI
+---
 
-## 🚀 How to Use
+## 🌟 Key Features
 
-1. Enter your research question in the text box
-2. Click "🚀 Start Research"
-3. Wait 2-3 minutes while agents work together
-4. Get a comprehensive report with citations!
+### 🧠 Python Backend (Multi-Agent Orchestration)
+- **5 Specialized Collaborative Agents**: Planner, Researcher, Analyst, Synthesizer, and Critic.
+- **Agentic RAG & Web Search**: Real-time information retrieval using Tavily API and content scraping.
+- **Secure Sandbox Execution**: Python REPL tool allowing agents to run calculations and analysis dynamically.
+- **RAG Triad Quality Control**: Multi-dimensional evaluation loop scoring Context Relevance, Groundedness, and Answer Relevance.
+- **Free-Tier Optimization**: Powered by Groq's Llama 3.3 70B and free API resources.
 
-## 🏗️ Architecture
+### 🎨 Next.js Frontend (Interactive UI)
+- **Real-Time Streaming**: Live WebSocket-driven updates displaying the active agent and research progress.
+- **Interactive Visualizations**: Beautiful timeline tracking agent activities, metrics, and token costs.
+- **Premium Aesthetics**: Fully responsive layout featuring sleek dark/light modes, glassmorphism, and smooth animations.
+- **Interactive Templates**: Pre-built presets for common research topics.
+- **Export Formats**: One-click download of generated research reports as formatted Markdown files.
+
+---
+
+## 🏗️ System Architecture & Workflow
+
+The system uses a state graph to manage agent transitions. The workflow is iterative: if the **Critic** flags issues in the draft report, it is sent back to the **Researcher** or **Analyst** for refinement.
 
 ```
-User Query → Planner → Researcher → Analyst → Synthesizer → Critic → Report
-                                                    ↑          ↓
-                                                    ←── Revise ←┘
+User Query ──> [Planner] ──> [Researcher] ──> [Analyst] ──> [Synthesizer] ──> [Critic] ──> Report Approved?
+                                  ^              |              |              |
+                                  |              v              |              ├──> Yes ──> Final Report
+                                  └──────────────┴──────────────┴──────────────┘ No (Revise)
 ```
 
-| Agent | Role |
-|-------|------|
-| **Planner** | Decomposes query into research tasks |
-| **Researcher** | Executes web searches via Tavily |
-| **Analyst** | Performs data analysis with Python |
-| **Synthesizer** | Generates report with citations |
-| **Critic** | Reviews quality, requests revisions |
+| Agent | Core Responsibility | Key Tools Used |
+| :--- | :--- | :--- |
+| **Planner** | Decomposes the query into a multi-step research plan. | LLM Reasoner |
+| **Researcher** | Performs search queries, scrapes web pages, and gathers context. | Tavily Search, Web Scraper |
+| **Analyst** | Performs data analysis, parses numerical data, and solves math equations. | Python REPL Sandbox |
+| **Synthesizer** | Merges agent outputs, resolves contradictions, and drafts the report. | Markdown Synthesizer |
+| **Critic** | Evaluates the report using the RAG Triad, proposing revisions if needed. | TruLens-based Evaluator |
 
-## 🔧 Configuration
+---
 
-This Space uses the following free APIs:
+## 🛠️ Technology Stack
 
-| API | Purpose | Get Key |
-|-----|---------|---------|
-| Groq | LLM (Llama 3.3 70B) | [console.groq.com](https://console.groq.com) |
-| Tavily | Web Search | [tavily.com](https://tavily.com) |
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Backend Core** | FastAPI & Python 3.11 | High-performance API hosting REST and WebSocket endpoints. |
+| **Agent Framework** | LangGraph & Custom State Graph | Manages execution order, memory, and routing. |
+| **LLM Provider** | Groq (Llama 3.3 70B) | High-speed, free-tier LLM API. |
+| **Frontend Core** | Next.js 15 & React 19 | Production-ready framework using App Router. |
+| **Styling** | Tailwind CSS & shadcn/ui | Beautiful, responsive, themeable design system. |
+| **Animations** | Framer Motion | Smooth state transitions and micro-animations. |
+| **State & Fetching**| TanStack Query & WebSockets | Manage server-side caching and real-time streams. |
 
-Secrets are configured in Space Settings → Repository secrets.
+---
 
-## 📊 Evaluation Metrics
-
-| Metric | Target | Description |
-|--------|--------|-------------|
-| Context Relevance | >0.80 | Retrieved docs match query |
-| Groundedness | >0.90 | Claims supported by sources |
-| Answer Relevance | >0.85 | Answer addresses question |
-
-## 🛠️ Local Development
-
-```bash
-# Clone repo
-git clone https://github.com/felixsutanto/multi-agent-research-system
-cd multi-agent-research-system
-
-# Install dependencies
-python -m uv sync
-
-# Add .env with API keys
-echo "GROQ_API_KEY=your_key" > .env
-echo "TAVILY_API_KEY=your_key" >> .env
-
-# Run Gradio app
-python -m uv run python app.py
-```
-
-=======
-# Multi-Agent Research System - Frontend
-
-A modern, production-ready Next.js 15 frontend for the Multi-Agent Research System, featuring real-time WebSocket communication, interactive visualizations, and a beautiful user interface.
-
-## 🌟 Features
-
-- **Real-Time Streaming**: Watch AI agents collaborate in real-time via WebSocket
-- **Interactive UI**: Beautiful, responsive interface with dark/light mode
-- **Agent Timeline**: Live visualization of agent activities and status
-- **Streaming Reports**: Progressive report generation with collapsible sections
-- **Quality Metrics**: RAG Triad scores, token usage, and cost tracking
-- **Preset Templates**: 8 pre-built research query templates
-- **Export Capabilities**: Download reports as Markdown
-- **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js 18+ and npm
-- Backend API running (local or Hugging Face)
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) (recommended Python package manager)
+- API Keys:
+  - **Groq API Key**: Get one at [console.groq.com](https://console.groq.com)
+  - **Tavily API Key**: Get one at [tavily.com](https://tavily.com)
 
-### Installation
+### 1. Clone & Environment Configuration
+
+Clone the repository:
+```bash
+git clone https://github.com/felixsutanto/multi-agent-research-system.git
+cd multi-agent-research-system
+```
+
+Create a `.env` file in the root directory:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
+```
+
+Create a `.env.local` file in the root directory (for Next.js frontend):
+```env
+NEXT_PUBLIC_API_URL=http://localhost:7860
+```
+
+### 2. Run the Backend API
+
+Using `uv`:
+```bash
+# Sync dependencies
+python -m uv sync
+
+# Start FastAPI server
+python -m uv run python app.py
+```
+The API server will run at `http://localhost:7860`.
+
+### 3. Run the Frontend App
 
 ```bash
 # Install dependencies
 npm install
 
-# Configure environment
-cp .env.local.example .env.local
-# Edit .env.local and set NEXT_PUBLIC_API_URL
-
-# Run development server
+# Start Next.js development server
 npm run dev
-
-# Open http://localhost:3000
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Build for Production
+---
 
-```bash
-# Create optimized production build
-npm run build
+## 📊 Evaluation & Quality Metrics
 
-# Start production server
-npm start
-```
+To ensure the output is high-quality and free of hallucination, the system evaluates drafts against the **RAG Triad** before final approval:
 
-## 📁 Project Structure
+| Metric | Target | Focus Area |
+| :--- | :--- | :--- |
+| **Context Relevance** | `> 0.80` | Ensures research documents retrieved by the Researcher match the original query. |
+| **Groundedness** | `> 0.90` | Verifies that all claims made in the report are backed by web sources (no hallucinations). |
+| **Answer Relevance** | `> 0.85` | Ensures the final synthesized report directly and fully answers the user query. |
 
-```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with providers
-│   ├── page.tsx           # Landing page
-│   └── research/          # Research interface
-├── components/
-│   ├── ui/                # shadcn/ui components
-│   ├── layout/            # Navbar, ThemeToggle
-│   ├── research/          # Research-specific components
-│   └── shared/            # Shared providers
-├── hooks/                 # Custom React hooks
-│   └── useResearch.ts    # Main research hook
-├── lib/                   # Utilities and configuration
-│   ├── types.ts          # TypeScript definitions
-│   ├── api.ts            # API client
-│   ├── websocket.ts      # WebSocket client
-│   └── utils.ts          # Helper functions
-└── data/                  # Static data
-    └── presets.ts        # Research templates
-```
+If any score falls below the threshold, the **Critic** instructs the agents to revise, with a maximum of `5` iterations to avoid infinite loops.
 
-## 🔧 Configuration
+---
 
-### Environment Variables
+## 📦 Deployment
 
-Create a `.env.local` file in the root directory:
+This project is configured for cloud deployment:
+- **Backend**: Deployed to Hugging Face Spaces (or any Docker-supported container platform).
+- **Frontend**: Deployed to Vercel.
 
-```bash
-# Backend API URL (local development)
-NEXT_PUBLIC_API_URL=http://localhost:8000
+For step-by-step instructions on deploying the application to Vercel, Docker, AWS, or Netlify, please refer to the [Deployment Guide](./DEPLOYMENT.md).
 
-# Or use your Hugging Face deployment
-# NEXT_PUBLIC_API_URL=https://your-space.hf.space
-```
+---
 
-### Customization
-
-- **Theme Colors**: Edit `src/app/globals.css`
-- **Presets**: Add templates in `src/data/presets.ts`
-- **API Endpoints**: Modify `src/lib/api.ts`
-
-## 🎨 Tech Stack
-
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Animations**: Framer Motion
-- **Data Fetching**: TanStack Query (React Query)
-- **Forms**: React Hook Form + Zod
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **Notifications**: Sonner
-
-## 📱 Components
-
-### ResearchForm
-Interactive form with validation, preset templates, and keyboard shortcuts.
-
-### AgentTimeline
-Real-time visualization of agent activities with smooth animations.
-
-### StreamingReport
-Progressive report display with collapsible sections and citations.
-
-### MetricsDashboard
-Analytics dashboard showing quality scores, token usage, and costs.
-
-## 🔌 API Integration
-
-The frontend connects to the backend via:
-
-- **REST API**: For starting research sessions
-- **WebSocket**: For real-time updates and streaming
-
-### Expected Backend Endpoints
-
-```
-POST   /api/research         # Start research
-GET    /api/research/:id     # Get session details
-GET    /api/research         # List all sessions
-DELETE /api/research/:id     # Delete session
-WS     /ws/research/:id      # WebSocket connection
-```
-
-## 🌐 Deployment
-
-### Vercel (Recommended)
-
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Set environment variable: `NEXT_PUBLIC_API_URL`
-4. Deploy automatically
-
-### Other Platforms
-
-The app can be deployed to any platform supporting Next.js:
-- Netlify
-- AWS Amplify
-- Google Cloud Run
-- Docker
-
-## 🧪 Development
-
-```bash
-# Run development server with Turbopack
-npm run dev
-
-# Type check
-npm run type-check
-
-# Lint
-npm run lint
-
-# Format code
-npm run format
-```
-
-## 📊 Performance
-
-- **Lighthouse Score**: 90+ across all categories
-- **Bundle Size**: ~400KB (gzipped)
-- **First Load**: <2s on 3G
-- **Interactive**: <1s
-
-## 🐛 Troubleshooting
-
-### WebSocket Connection Failed
-- Verify `NEXT_PUBLIC_API_URL` is correct
-- Check CORS settings on backend
-- Ensure backend WebSocket endpoint is accessible
-
-### Build Errors
-- Clear `.next` folder: `rm -rf .next`
-- Reinstall dependencies: `npm clean-install`
-- Check Node.js version: `node --version` (should be 18+)
-
-### Styles Not Loading
-- Restart dev server
-- Clear browser cache
-- Check Tailwind CSS configuration
-
->>>>>>> 611a0f83dd86605ce45dad5783be3407e1a524a5
 ## 📝 License
 
-MIT
-
-<<<<<<< HEAD
----
-
-**GitHub**: [felixsutanto/multi-agent-research-system](https://github.com/felixsutanto/multi-agent-research-system)
-=======
-## 🤝 Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📞 Support
-
-For issues and questions:
-- GitHub Issues
-- Documentation: `/docs`
-
----
-
-**Built with ❤️ using Next.js 15 and TypeScript**
->>>>>>> 611a0f83dd86605ce45dad5783be3407e1a524a5
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
