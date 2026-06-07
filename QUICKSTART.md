@@ -31,7 +31,7 @@ git push -u origin main
    - `NEXT_PUBLIC_API_URL` = Your backend URL
 6. Click "Deploy"
 
-### 3. Done! 🎉
+### 3. Done!
 Your app will be live at `https://your-project.vercel.app`
 
 ## Option 2: Local Production Build

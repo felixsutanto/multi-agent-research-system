@@ -10,7 +10,7 @@ pinned: false
 license: mit
 ---
 
-# 🔬 Multi-Agent Research System
+# Multi-Agent Research System
 
 An AI-powered multi-agent research system designed to conduct comprehensive, high-quality, autonomous research. The system features a robust **Python (FastAPI) Backend** orchestrating multiple specialized agents and a modern, responsive **Next.js 15 Frontend** with real-time WebSocket streaming, interactive timelines, and detailed quality dashboards.
 
@@ -19,16 +19,16 @@ An AI-powered multi-agent research system designed to conduct comprehensive, hig
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-### 🧠 Python Backend (Multi-Agent Orchestration)
+### Python Backend (Multi-Agent Orchestration)
 - **5 Specialized Collaborative Agents**: Planner, Researcher, Analyst, Synthesizer, and Critic.
 - **Agentic RAG & Web Search**: Real-time information retrieval using Tavily API and content scraping.
 - **Secure Sandbox Execution**: Python REPL tool allowing agents to run calculations and analysis dynamically.
 - **RAG Triad Quality Control**: Multi-dimensional evaluation loop scoring Context Relevance, Groundedness, and Answer Relevance.
 - **Free-Tier Optimization**: Powered by Groq's Llama 3.3 70B and free API resources.
 
-### 🎨 Next.js Frontend (Interactive UI)
+### Next.js Frontend (Interactive UI)
 - **Real-Time Streaming**: Live WebSocket-driven updates displaying the active agent and research progress.
 - **Interactive Visualizations**: Beautiful timeline tracking agent activities, metrics, and token costs.
 - **Premium Aesthetics**: Fully responsive layout featuring sleek dark/light modes, glassmorphism, and smooth animations.
@@ -37,7 +37,7 @@ An AI-powered multi-agent research system designed to conduct comprehensive, hig
 
 ---
 
-## 🏗️ System Architecture & Workflow
+## System Architecture & Workflow
 
 The system uses a state graph to manage agent transitions. The workflow is iterative: if the **Critic** flags issues in the draft report, it is sent back to the **Researcher** or **Analyst** for refinement.
 
@@ -58,7 +58,7 @@ User Query ──> [Planner] ──> [Researcher] ──> [Analyst] ──> [Syn
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Component | Technology | Description |
 | :--- | :--- | :--- |
@@ -72,7 +72,7 @@ User Query ──> [Planner] ──> [Researcher] ──> [Analyst] ──> [Syn
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ and npm
@@ -126,7 +126,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 📊 Evaluation & Quality Metrics
+## Evaluation & Quality Metrics
 
 To ensure the output is high-quality and free of hallucination, the system evaluates drafts against the **RAG Triad** before final approval:
 
@@ -140,7 +140,7 @@ If any score falls below the threshold, the **Critic** instructs the agents to r
 
 ---
 
-## 📦 Deployment
+## Deployment
 
 This project is configured for cloud deployment:
 - **Backend**: Deployed to Hugging Face Spaces (or any Docker-supported container platform).
@@ -150,6 +150,6 @@ For step-by-step instructions on deploying the application to Vercel, Docker, AW
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

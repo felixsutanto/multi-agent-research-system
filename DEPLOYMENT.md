@@ -1,10 +1,10 @@
-# 🚀 Deployment Guide: Multi-Agent Research System
+# Deployment Guide: Multi-Agent Research System
 
 This guide outlines the production deployment process for the Multi-Agent Research System. The architecture separates the application into a **Python (FastAPI) Backend** (optimized for Hugging Face Spaces or custom Docker environments) and a **Next.js 15 Frontend** (optimized for Vercel).
 
 ---
 
-## 💻 Frontend Deployment (Next.js)
+## Frontend Deployment (Next.js)
 
 ### Option 1: Vercel Dashboard (Recommended - Free & Easiest)
 
@@ -30,7 +30,7 @@ Vercel is the recommended hosting platform for Next.js applications, offering au
    - **Output Directory**: `.next`
    - **Install Command**: `npm install`
 
-4. **Set Environment Variables** (⚠️ **Critical**):
+4. **Set Environment Variables** (Critical):
    Expand the **Environment Variables** section and add:
    - **Name**: `NEXT_PUBLIC_API_URL`
    - **Value**: `https://felix2712-multi-agent-research.hf.space` (or your custom backend endpoint)
@@ -70,7 +70,7 @@ vercel --prod
 
 ---
 
-## 🐍 Backend Deployment (Python/FastAPI)
+## Backend Deployment (Python/FastAPI)
 
 The backend is designed to run efficiently on Hugging Face Spaces (using a Docker setup) or on any cloud provider supporting Docker / Python.
 
@@ -109,7 +109,7 @@ The backend is designed to run efficiently on Hugging Face Spaces (using a Docke
 
 ---
 
-## 🐳 Docker Deployment (Self-Hosting)
+## Docker Deployment (Self-Hosting)
 
 You can build and deploy the entire backend using Docker.
 
@@ -153,7 +153,7 @@ docker run -d -p 7860:7860 \
 
 ---
 
-## ☁️ Alternative Cloud Providers (Frontend)
+## Alternative Cloud Providers (Frontend)
 
 ### Netlify Deployment
 1. Import repository on [Netlify](https://netlify.com).
@@ -187,7 +187,7 @@ docker run -d -p 7860:7860 \
 
 ---
 
-## 🔧 Environment Variables Reference
+## Environment Variables Reference
 
 | Variable | Scope | Required | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -197,7 +197,7 @@ docker run -d -p 7860:7860 \
 
 ---
 
-## ✅ Post-Deployment Verification Checklist
+## Post-Deployment Verification Checklist
 
 After deploying the backend and frontend, verify the system stability using this checklist:
 
@@ -210,7 +210,7 @@ After deploying the backend and frontend, verify the system stability using this
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Issue: Build Fails on Vercel
 * **Cause**: Node.js engine mismatch or caching issue.
