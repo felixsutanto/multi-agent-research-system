@@ -1,0 +1,62 @@
+# Vercelignore - Exclude backend and unnecessary files from Vercel deployment
+
+# Python backend
+src/api/
+src/graph/
+src/evaluation/
+src/utils/
+src/agents/
+tests/
+*.py
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.python-version
+requirements.txt
+pyproject.toml
+uv.lock
+Dockerfile
+docker-compose.yml
+render.yaml
+
+# Frontend local development folder (duplicate)
+frontend/
+
+# Dependencies
+node_modules/
+
+# Testing
+/coverage
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Backend data and config (don't exclude src/data - needed for frontend presets!)
+/data/
+/config/
+
+# Documentation (optional - include if you want docs deployed)
+# README.md
+# DEPLOYMENT.md

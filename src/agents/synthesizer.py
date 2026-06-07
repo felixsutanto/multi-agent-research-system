@@ -16,7 +16,7 @@ logger = AgentLogger("synthesizer")
 
 
 SYNTHESIS_PROMPT = """You are an expert research writer. Your task is to synthesize 
-research findings into a comprehensive, well-structured report.
+research findings into a comprehensive, well-structured report using IEEE citation style.
 
 ## Original Research Question
 {query}
@@ -33,9 +33,15 @@ research findings into a comprehensive, well-structured report.
 Create a comprehensive research report that:
 1. Addresses the original research question thoroughly
 2. Synthesizes all findings into a coherent narrative
-3. CITES EVERY CLAIM with [Source: URL] format
+3. USES IEEE CITATION FORMAT: [1], [2], etc. for all claims
 4. Includes data analysis insights where applicable
 5. Draws meaningful conclusions
+
+## Citation Guidelines (IEEE Style)
+- Use numbered citations in square brackets: [1], [2], [3]
+- Multiple citations: [1], [2] or [1]-[3]
+- Each source should have a unique number
+- References section lists all sources by number
 
 ## Report Structure
 Use this markdown structure:
@@ -43,7 +49,7 @@ Use this markdown structure:
 # [Research Question Rephrased as Title]
 
 ## Executive Summary
-[2-3 sentence summary of key findings]
+[2-3 sentence summary of key findings with citations]
 
 ## Methodology
 - Sources consulted: [N web sources]
@@ -52,8 +58,7 @@ Use this markdown structure:
 ## Findings
 
 ### [Topic 1]
-[Detailed findings with citations]
-[Source: URL]
+[Detailed findings with IEEE citations like [1], [2]]
 
 ### [Topic 2]
 [More findings with citations]
@@ -65,10 +70,12 @@ Use this markdown structure:
 [Key takeaways and implications]
 
 ## References
-[Numbered list of all sources cited]
+Format each reference as:
+[1] "Title", URL, Accessed: Date.
+[2] "Title", URL, Accessed: Date.
 
 ## Important Guidelines
-- Every factual claim MUST have a citation
+- Every factual claim MUST have an IEEE citation [N]
 - Use professional, objective language
 - Be thorough but concise
 - If information is uncertain, acknowledge it
@@ -81,7 +88,7 @@ The previous draft was reviewed and the following issues were identified:
 {revision_requests}
 
 Please address these issues in your revised report. Pay special attention to:
-- Adding missing citations
+- Adding missing IEEE citations [N]
 - Removing any unsupported claims
 - Improving factual accuracy
 """
@@ -94,16 +101,17 @@ def create_synthesizer_agent():
 
 
 def format_web_results(results: list) -> str:
-    """Format web results for the prompt"""
+    """Format web results for the prompt with numbered references"""
     if not results:
         return "No web research results available."
     
     formatted = []
     for i, result in enumerate(results[:10], 1):  # Limit to top 10
         formatted.append(
-            f"**Source {i}:** {result.get('title', 'Untitled')}\n"
+            f"**[{i}] Source:** {result.get('title', 'Untitled')}\n"
             f"URL: {result.get('url', 'N/A')}\n"
             f"Content: {result.get('content', 'No content')[:500]}...\n"
+            f"(Use citation [A{i}] to reference this source)"
         )
     
     return "\n---\n".join(formatted)
@@ -124,6 +132,7 @@ def format_analysis_results(results: list) -> str:
         )
     
     return "\n---\n".join(formatted)
+
 
 
 async def synthesizer_node(state: AgentState) -> dict:
@@ -160,20 +169,20 @@ async def synthesizer_node(state: AgentState) -> dict:
         
         draft_report = response.content
         
-        # Extract citations from the report
+        # Build citations from web_results (for IEEE format)
+        # The LLM should have used [1], [2], etc. based on our numbered sources
         citations = []
-        import re
-        citation_pattern = r'\[Source:\s*(https?://[^\]]+)\]'
-        urls_found = re.findall(citation_pattern, draft_report)
+        web_results = state.get("web_results", [])
         
-        for i, url in enumerate(set(urls_found), 1):
+        for i, result in enumerate(web_results[:10], 1):
             citations.append({
                 "id": i,
                 "source": "web",
-                "title": "",  # Would need to match with web_results
-                "url": url,
+                "title": result.get("title", "Unknown Title"),
+                "url": result.get("url", ""),
                 "accessed_date": datetime.now().strftime("%Y-%m-%d"),
             })
+
         
         logger.info(f"Draft report created: {len(draft_report)} chars, {len(citations)} citations")
         

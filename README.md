@@ -1,125 +1,153 @@
+---
+title: Multi-Agent Research System
+emoji: 🔬
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+license: mit
+---
+
 # Multi-Agent Research System
 
-> An AI-powered multi-agent system where specialized agents collaborate to conduct comprehensive research, synthesize findings, and produce high-quality reports with citations.
+An AI-powered multi-agent research system designed to conduct comprehensive, high-quality, autonomous research. The system features a robust **Python (FastAPI) Backend** orchestrating multiple specialized agents and a modern, responsive **Next.js 15 Frontend** with real-time WebSocket streaming, interactive timelines, and detailed quality dashboards.
 
-## ✨ Features
+> [!NOTE]
+> This project is designed as a production-grade demonstration for the AI Engineering track, showcasing multi-agent collaboration, WebSocket streaming, RAG evaluation, Docker containerization, CI/CD, and serverless hosting.
 
-- **5 Specialized Agents**: Planner, Researcher, Analyst, Synthesizer, Critic
-- **Free LLM**: Uses Groq's Llama 3.3 70B (free tier)
-- **Web Search**: Tavily API (1000 free searches/month)
-- **Quality Control**: Automatic revision loop with RAG Triad evaluation
-- **API Ready**: FastAPI with REST and WebSocket endpoints
+---
 
-## 🚀 Quick Start
+## Key Features
 
-### 1. Get Free API Keys
+### Python Backend (Multi-Agent Orchestration)
+- **5 Specialized Collaborative Agents**: Planner, Researcher, Analyst, Synthesizer, and Critic.
+- **Agentic RAG & Web Search**: Real-time information retrieval using Tavily API and content scraping.
+- **Secure Sandbox Execution**: Python REPL tool allowing agents to run calculations and analysis dynamically.
+- **RAG Triad Quality Control**: Multi-dimensional evaluation loop scoring Context Relevance, Groundedness, and Answer Relevance.
+- **Free-Tier Optimization**: Powered by Groq's Llama 3.3 70B and free API resources.
 
-| Service | Free Tier | Sign Up |
-|---------|-----------|---------|
-| **Groq** | Llama 3.3 70B (unlimited*) | [console.groq.com](https://console.groq.com) |
-| **Tavily** | 1000 searches/month | [tavily.com](https://tavily.com) |
+### Next.js Frontend (Interactive UI)
+- **Real-Time Streaming**: Live WebSocket-driven updates displaying the active agent and research progress.
+- **Interactive Visualizations**: Beautiful timeline tracking agent activities, metrics, and token costs.
+- **Premium Aesthetics**: Fully responsive layout featuring sleek dark/light modes, glassmorphism, and smooth animations.
+- **Interactive Templates**: Pre-built presets for common research topics.
+- **Export Formats**: One-click download of generated research reports as formatted Markdown files.
 
-### 2. Setup
+---
 
+## System Architecture & Workflow
+
+The system uses a state graph to manage agent transitions. The workflow is iterative: if the **Critic** flags issues in the draft report, it is sent back to the **Researcher** or **Analyst** for refinement.
+
+```
+User Query ──> [Planner] ──> [Researcher] ──> [Analyst] ──> [Synthesizer] ──> [Critic] ──> Report Approved?
+                                  ^              |              |              |
+                                  |              v              |              ├──> Yes ──> Final Report
+                                  └──────────────┴──────────────┴──────────────┘ No (Revise)
+```
+
+| Agent | Core Responsibility | Key Tools Used |
+| :--- | :--- | :--- |
+| **Planner** | Decomposes the query into a multi-step research plan. | LLM Reasoner |
+| **Researcher** | Performs search queries, scrapes web pages, and gathers context. | Tavily Search, Web Scraper |
+| **Analyst** | Performs data analysis, parses numerical data, and solves math equations. | Python REPL Sandbox |
+| **Synthesizer** | Merges agent outputs, resolves contradictions, and drafts the report. | Markdown Synthesizer |
+| **Critic** | Evaluates the report using the RAG Triad, proposing revisions if needed. | TruLens-based Evaluator |
+
+---
+
+## Technology Stack
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Backend Core** | FastAPI & Python 3.11 | High-performance API hosting REST and WebSocket endpoints. |
+| **Agent Framework** | LangGraph & Custom State Graph | Manages execution order, memory, and routing. |
+| **LLM Provider** | Groq (Llama 3.3 70B) | High-speed, free-tier LLM API. |
+| **Frontend Core** | Next.js 15 & React 19 | Production-ready framework using App Router. |
+| **Styling** | Tailwind CSS & shadcn/ui | Beautiful, responsive, themeable design system. |
+| **Animations** | Framer Motion | Smooth state transitions and micro-animations. |
+| **State & Fetching**| TanStack Query & WebSockets | Manage server-side caching and real-time streams. |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) (recommended Python package manager)
+- API Keys:
+  - **Groq API Key**: Get one at [console.groq.com](https://console.groq.com)
+  - **Tavily API Key**: Get one at [tavily.com](https://tavily.com)
+
+### 1. Clone & Environment Configuration
+
+Clone the repository:
 ```bash
-# Clone and enter directory
-cd "Multi-Agent Research System"
+git clone https://github.com/felixsutanto/multi-agent-research-system.git
+cd multi-agent-research-system
+```
 
-# Create .env file with your API keys
-echo "GROQ_API_KEY=your_groq_key" > .env
-echo "TAVILY_API_KEY=your_tavily_key" >> .env
+Create a `.env` file in the root directory:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
+```
 
-# Install dependencies
+Create a `.env.local` file in the root directory (for Next.js frontend):
+```env
+NEXT_PUBLIC_API_URL=http://localhost:7860
+```
+
+### 2. Run the Backend API
+
+Using `uv`:
+```bash
+# Sync dependencies
 python -m uv sync
-```
 
-### 3. Run
+# Start FastAPI server
+python -m uv run python app.py
+```
+The API server will run at `http://localhost:7860`.
+
+### 3. Run the Frontend App
 
 ```bash
-python -m uv run uvicorn src.api.main:app --reload
+# Install dependencies
+npm install
+
+# Start Next.js development server
+npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Test
+---
 
-```powershell
-# PowerShell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/research" `
-  -Method POST -ContentType "application/json" `
-  -Body '{"query": "What are the benefits of renewable energy?"}'
-```
+## Evaluation & Quality Metrics
 
-## 🏗️ Architecture
+To ensure the output is high-quality and free of hallucination, the system evaluates drafts against the **RAG Triad** before final approval:
 
-```
-User Query → Planner → Researcher → Analyst → Synthesizer → Critic → Report
-                                                    ↑          ↓
-                                                    ←── Revise ←┘
-```
+| Metric | Target | Focus Area |
+| :--- | :--- | :--- |
+| **Context Relevance** | `> 0.80` | Ensures research documents retrieved by the Researcher match the original query. |
+| **Groundedness** | `> 0.90` | Verifies that all claims made in the report are backed by web sources (no hallucinations). |
+| **Answer Relevance** | `> 0.85` | Ensures the final synthesized report directly and fully answers the user query. |
 
-| Agent | Role |
-|-------|------|
-| **Planner** | Decomposes query into research tasks |
-| **Researcher** | Executes web searches via Tavily |
-| **Analyst** | Performs data analysis with Python |
-| **Synthesizer** | Generates report with citations |
-| **Critic** | Reviews quality, requests revisions |
+If any score falls below the threshold, the **Critic** instructs the agents to revise, with a maximum of `5` iterations to avoid infinite loops.
 
-## 📁 Project Structure
+---
 
-```
-src/
-├── agents/          # 5 AI agents
-├── tools/           # Web search, vector DB, Python REPL
-├── graph/           # LangGraph workflow
-├── evaluation/      # RAG Triad metrics
-├── api/             # FastAPI endpoints
-└── utils/           # Config, logging, LLM provider
-```
+## Deployment
 
-## 🔧 Configuration
+This project is configured for cloud deployment:
+- **Backend**: Deployed to Hugging Face Spaces (or any Docker-supported container platform).
+- **Frontend**: Deployed to Vercel.
 
-Edit `config/config.yaml`:
+For step-by-step instructions on deploying the application to Vercel, Docker, AWS, or Netlify, please refer to the [Deployment Guide](./DEPLOYMENT.md).
 
-```yaml
-llm:
-  model: "llama-3.3-70b-versatile"  # Groq model
-  temperature: 0.0
+---
 
-agents:
-  max_iterations: 3  # Max revision loops
-```
+## License
 
-## 🌐 API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/research` | POST | Conduct research |
-| `/ws/research` | WebSocket | Streaming updates |
-
-## 🚢 Deploy (Free)
-
-### Render.com
-
-1. Push to GitHub
-2. Create Web Service at [render.com](https://render.com)
-3. Add environment variables
-4. Deploy!
-
-### Docker
-
-```bash
-docker-compose up --build
-```
-
-## 📊 Evaluation Metrics
-
-| Metric | Target | Description |
-|--------|--------|-------------|
-| Context Relevance | >0.80 | Retrieved docs match query |
-| Groundedness | >0.90 | Claims supported by sources |
-| Answer Relevance | >0.85 | Answer addresses question |
-
-## 📝 License
-
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

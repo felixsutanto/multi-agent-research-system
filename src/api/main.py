@@ -44,6 +44,7 @@ class QualityMetrics(BaseModel):
     context_relevance: float | None = None
     groundedness: float | None = None
     answer_relevance: float | None = None
+    overall_score: float | None = None  # Calculated average of RAG metrics
     citation_coverage: float | None = None
     task_success: bool = False
     latency_seconds: float | None = None
@@ -156,6 +157,16 @@ async def conduct_research(request: ResearchRequest):
             custom_metrics = evaluate_all_custom_metrics(final_state)
             metrics_data["citation_coverage"] = custom_metrics["citation_coverage"]["score"]
             metrics_data["task_success"] = custom_metrics["task_success"]["success"]
+        
+        # Calculate overall_score from available metrics
+        rag_scores = [
+            metrics_data.get("context_relevance"),
+            metrics_data.get("groundedness"),
+            metrics_data.get("answer_relevance"),
+        ]
+        valid_scores = [s for s in rag_scores if s is not None]
+        if valid_scores:
+            metrics_data["overall_score"] = sum(valid_scores) / len(valid_scores)
         
         # Add latency
         if final_state.get("metrics"):
